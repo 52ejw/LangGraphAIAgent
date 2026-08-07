@@ -18,7 +18,14 @@ def run_turn(app, user_input: str):
             "content": user_input
         }
     ],
-    "next_action": ""
+    "topic": "",
+    "plan": [],
+    "current_step": 0,
+    "research_results": [],
+    "sources": [],
+    "next_action": "",
+    "error": None,
+    "final_answer": None,
 }
 
     result = app.invoke(input_state, config=config)

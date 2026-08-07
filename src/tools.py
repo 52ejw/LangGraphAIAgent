@@ -1,100 +1,151 @@
-from typing import Dict, Any, List
+from typing import Any, Dict
 import random
 
-_WEB_INDEX = {
+WEB_INDEX = {
     "langgraph": [
         {
-            "title": "LangGraph: Building Stateful Multi-Actor Applications",
-            "url": "https://example.com/langgraph-overview",
-            "snippet": "LangGraph models agent workflows as graphs of nodes and "
-                       "edges, allowing explicit control over state and branching.",
+            "title": "LangGraph Documentation",
+            "url": "https://docs.langchain.com/oss/python/langgraph/overview",
+            "snippet": (
+                "LangGraph is a framework for building stateful, "
+                "multi-step applications with language models."
+            ),
         },
         {
-            "title": "Conditional Edges in LangGraph",
-            "url": "https://example.com/langgraph-conditional-edges",
-            "snippet": "Conditional edges let a graph route to different nodes "
-                       "based on the current state, enabling agent-like decisions.",
+            "title": "LangGraph Graph Concepts",
+            "url": "https://docs.langchain.com/oss/python/langgraph/graph-api",
+            "snippet": (
+                "LangGraph represents workflows using nodes, edges, "
+                "state, and conditional routing."
+            ),
         },
     ],
     "climate": [
         {
-            "title": "Global Climate Trends 2025 Report",
-            "url": "https://example.com/climate-2025",
-            "snippet": "Average global temperatures rose again in 2025, driven "
-                       "by continued greenhouse gas emissions.",
+            "title": "Global Climate Trends",
+            "url": "https://example.com/climate-trends",
+            "snippet": (
+                "A simulated source containing background information "
+                "about global climate trends."
+            ),
         },
     ],
     "default": [
         {
-            "title": "General Overview Article",
+            "title": "General Research Overview",
             "url": "https://example.com/general-overview",
-            "snippet": "A broad summary covering background and recent context "
-                       "on the requested topic.",
+            "snippet": (
+                "A simulated research source containing general "
+                "background information about the requested topic."
+            ),
         },
     ],
 }
 
-_DOC_KB = {
+
+DOCUMENT_INDEX = {
     "langgraph": [
         {
-            "title": "Internal Doc: Agent Architecture Guidelines",
+            "title": "Internal Agent Architecture Guidelines",
             "url": "kb://internal/agent-architecture",
-            "snippet": "Our internal standard recommends separating planning, "
-                       "tool execution, and response synthesis into distinct nodes.",
+            "snippet": (
+                "The recommended architecture separates planning, "
+                "tool execution, and response synthesis into different nodes."
+            ),
         }
     ],
     "default": [
         {
-            "title": "Internal Doc: Research Methodology Notes",
+            "title": "Internal Research Methodology Notes",
             "url": "kb://internal/research-methodology",
-            "snippet": "Internal notes on how to structure multi-step research "
-                       "for open-ended topics.",
+            "snippet": (
+                "Internal notes describing how to structure "
+                "multi-step research for open-ended topics."
+            ),
         }
     ],
 }
 
 
-def _match_key(query: str, index: Dict[str, Any]) -> str:
-    q = query.lower()
+def find_matching_topic(query: str, index: Dict[str, Any]) -> str:
+  
+    query_lower = query.lower()
+
     for key in index:
-        if key != "default" and key in q:
+        if key != "default" and key in query_lower:
             return key
+
     return "default"
 
 
 def web_search_simulation(query: str) -> Dict[str, Any]:
+
     if not query or not query.strip():
-        raise ValueError("Empty query passed to web_search_simulation")
+        raise ValueError("Search query cannot be empty.")
 
-    key = _match_key(query, _WEB_INDEX)
-    results = _WEB_INDEX[key]
+    topic_key = find_matching_topic(query, WEB_INDEX)
+    results = WEB_INDEX[topic_key]
 
-    content = " ".join(r["snippet"] for r in results)
-    return {"content": f"[Web search] {content}", "sources": results}
+    content = " ".join(result["snippet"] for result in results)
+
+    return {
+        "content": f"[Web search] {content}",
+        "sources": results,
+    }
 
 
 def document_retrieval(query: str) -> Dict[str, Any]:
+
     if not query or not query.strip():
-        raise ValueError("Empty query passed to document_retrieval")
+        raise ValueError("Document search query cannot be empty.")
 
-    key = _match_key(query, _DOC_KB)
-    results = _DOC_KB[key]
+    topic_key = find_matching_topic(query, DOCUMENT_INDEX)
+    results = DOCUMENT_INDEX[topic_key]
 
-    content = " ".join(r["snippet"] for r in results)
-    return {"content": f"[Document retrieval] {content}", "sources": results}
+    content = " ".join(result["snippet"] for result in results)
+
+    return {
+        "content": f"[Document retrieval] {content}",
+        "sources": results,
+    }
 
 
+# Available research tools.
 TOOL_REGISTRY = {
     "web_search_simulation": web_search_simulation,
     "document_retrieval": document_retrieval,
 }
 
 
-def choose_tool(step: str) -> str:
-    step_lower = step.lower()
-    news_words = ("recent", "latest", "current", "news", "trend", "2025", "2026")
-    if any(w in step_lower for w in news_words):
+def choose_tool(research_step: str) -> str:
+
+    step = research_step.lower()
+
+    recent_keywords = (
+        "recent",
+        "latest",
+        "current",
+        "news",
+        "trend",
+        "2025",
+        "2026",
+    )
+
+    internal_keywords = (
+        "internal",
+        "guideline",
+        "policy",
+    )
+
+    if any(word in step for word in recent_keywords):
         return "web_search_simulation"
-    if "internal" in step_lower or "guideline" in step_lower or "policy" in step_lower:
+
+    if any(word in step for word in internal_keywords):
         return "document_retrieval"
-    return random.choice(["web_search_simulation", "document_retrieval"])
+
+    return random.choice(
+        [
+            "web_search_simulation",
+            "document_retrieval",
+        ]
+    )

@@ -1,4 +1,4 @@
-from typing import TypedDict, List, Dict, Any, Optional, Annotated
+from typing import Annotated, Dict, List, Optional, TypedDict
 import operator
 
 
@@ -18,15 +18,13 @@ class AgentState(TypedDict):
     messages: Annotated[List[Dict[str, str]], operator.add]
 
     topic: str
-
     plan: List[str]
-
     current_step: int
 
-    research_results: Annotated[List[ResearchResult], operator.add]
-    sources: Annotated[List[Source], operator.add]
+    research_results: List[ResearchResult]
+    sources: List[Source]
 
-    next_action: str  
+    next_action: str
 
     error: Optional[str]
 
