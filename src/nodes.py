@@ -8,11 +8,37 @@ def extract_latest_user_message(state: AgentState) -> str:
     for msg in reversed(state["messages"]):
         if msg.get("role") == "user":
             return msg["content"]
+
     return ""
+
+#Resolve follow up questions 
+def resolve_topic(state: AgentState) -> str:
+    latest_message = extract_latest_user_message(state)
+
+    previous_topic = state.get("topic", "")
+
+    reference_words = [
+        "it",
+        "its",
+        "they",
+        "their",
+        "this",
+        "that"
+    ]
+
+    message_lower = latest_message.lower()
+
+    if (
+        previous_topic
+        and any(word in message_lower.split() for word in reference_words)
+    ):
+        return f"{latest_message} (related to {previous_topic})"
+
+    return latest_message
 
 #Planner
 def planner_node(state: AgentState) -> Dict[str, Any]:
-    topic = state.get("topic") or extract_latest_user_message(state)
+    topic = resolve_topic(state)
 
     try:
         plan = generate_plan(topic)

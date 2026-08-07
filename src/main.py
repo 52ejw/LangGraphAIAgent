@@ -12,15 +12,14 @@ def run_turn(app, user_input: str):
 
 
     input_state = {
-        "messages": [
-            {
-                "role": "user",
-                "content": user_input
-            }
-        ],
-        "topic": user_input,
-        "next_action": ""
-    }
+    "messages": [
+        {
+            "role": "user",
+            "content": user_input
+        }
+    ],
+    "next_action": ""
+}
 
     result = app.invoke(input_state, config=config)
 
