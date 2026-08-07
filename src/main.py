@@ -1,6 +1,6 @@
 from graph import build_graph
 
-THREAD_ID = "demo-session-1"
+THREAD_ID = "demo-session-3"
 
 
 def run_turn(app, user_input: str):

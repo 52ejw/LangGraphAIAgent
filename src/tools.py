@@ -143,9 +143,4 @@ def choose_tool(research_step: str) -> str:
     if any(word in step for word in internal_keywords):
         return "document_retrieval"
 
-    return random.choice(
-        [
-            "web_search_simulation",
-            "document_retrieval",
-        ]
-    )
+    return "web_search_simulation"

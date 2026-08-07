@@ -71,7 +71,12 @@ def planner_node(state: AgentState) -> Dict[str, Any]:
         "topic": topic,
         "plan": plan,
         "current_step": 0,
+
+        "research_results": [],
+        "sources": [],
+
         "next_action": "research",
+
         "messages": [
             {
                 "role": "system",
@@ -87,9 +92,12 @@ def researcher_node(state: AgentState) -> Dict[str, Any]:
     step_index = state["current_step"]
 
     if step_index >= len(plan):
-        return {"next_action": "respond"}
+        return {
+            "next_action": "respond"
+        }
 
     research_step = plan[step_index]
+
     tool_name = choose_tool(research_step)
     tool_function = TOOL_REGISTRY.get(tool_name)
 
@@ -101,11 +109,13 @@ def researcher_node(state: AgentState) -> Dict[str, Any]:
 
     try:
         result = tool_function(research_step)
+
+        content = result["content"]
+        sources = result.get("sources", [])
+
     except Exception as exc:
-        result = {
-            "content": f"[Tool error] {tool_name} failed: {exc}",
-            "sources": [],
-        }
+        content = f"[Tool error] {tool_name} failed: {exc}"
+        sources = []
 
     next_step = step_index + 1
 
@@ -119,10 +129,10 @@ def researcher_node(state: AgentState) -> Dict[str, Any]:
             {
                 "step": research_step,
                 "tool": tool_name,
-                "content": result["content"],
+                "content": content,
             }
         ],
-        "sources": result.get("sources", []),
+        "sources": sources,
         "current_step": next_step,
         "next_action": next_action,
     }
@@ -144,13 +154,13 @@ def responder_node(state: AgentState) -> Dict[str, Any]:
             f"Raw findings:\n{findings}"
         )
 
-    sources = "\n".join(
-        f"[{index}] {source['title']} - {source['url']}"
-        for index, source in enumerate(state["sources"], start=1)
+    source_lines = "\n".join(
+        f"  [{index}] {source['title']} - {source['url']}"
+        for index, source in enumerate(state.get("sources", []), start=1)
     )
 
-    if sources:
-        answer = f"{answer}\n\nSources:\n{sources}"
+    if source_lines:
+        answer = f"{answer}\n\nSources:\n{source_lines}"
 
     return {
         "final_answer": answer,

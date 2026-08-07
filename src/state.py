@@ -21,8 +21,8 @@ class AgentState(TypedDict):
     plan: List[str]
     current_step: int
 
-    research_results: List[ResearchResult]
-    sources: List[Source]
+    research_results: Annotated[List[ResearchResult], operator.add]
+    sources: Annotated[List[Source], operator.add]
 
     next_action: str
 
