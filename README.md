@@ -79,8 +79,6 @@ To use real Claude synthesis, create a `.env` file in the project directory and 
 
 When the API key is available, the agent will automatically use Claude instead of the MockLLM.
 
-> **Note:** A `.gitignore` is included to keep `.env`, `venv/`, `__pycache__/`, and other local files out of version control, so your API key won't be accidentally committed.
-
 ## Run
 
 Run the application using:
