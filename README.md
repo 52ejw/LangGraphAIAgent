@@ -40,7 +40,6 @@ LangGraphAIAgent/
 ├── README.md
 └── .env
 
-
 ## Setup
 
 ### 1. Create a virtual environment
@@ -86,3 +85,6 @@ Run the application using:
 ```bash
 python src/main.py
 ```
+
+Install dependencies:
+python3 -m pip install langgraph langchain
